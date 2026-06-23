@@ -209,6 +209,7 @@ export default function ChatPage() {
   }
 
   async function inviteToGroup() {
+    if (!conversationId) return;
     if (!/^\d{8}$/.test(inviteNum)) return toast.error("8 haneli numara gir");
     const { error } = await supabase.rpc("add_group_member_by_number", {
       _conversation_id: conversationId,
