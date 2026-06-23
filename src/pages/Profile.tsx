@@ -54,10 +54,17 @@ export default function ProfilePage() {
       setBusy(false);
       return toast.error(upErr.message);
     }
-    const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
+    // Private bucket → use a long-lived signed URL
+    const { data: signed, error: signErr } = await supabase.storage
+      .from("avatars")
+      .createSignedUrl(path, 60 * 60 * 24 * 365);
+    if (signErr || !signed) {
+      setBusy(false);
+      return toast.error(signErr?.message || "URL oluşturulamadı");
+    }
     const { error } = await supabase
       .from("profiles")
-      .update({ avatar_url: pub.publicUrl })
+      .update({ avatar_url: signed.signedUrl })
       .eq("id", user.id);
     setBusy(false);
     if (error) return toast.error(error.message);
