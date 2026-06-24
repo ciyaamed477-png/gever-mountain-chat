@@ -50,9 +50,18 @@ export default function SettingsPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <header className="px-5 pb-3 pt-6">
+      <header className="flex items-center gap-2 px-3 pb-3 pt-6">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate(-1)}
+          aria-label="Geri"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
         <h1 className="text-2xl font-black tracking-wider">Ayarlar</h1>
       </header>
+
 
       <div className="space-y-6 px-5 pb-10">
         <Section title="Bildirimler">
