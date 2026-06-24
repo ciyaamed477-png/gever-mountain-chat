@@ -60,6 +60,7 @@ export default function ChatPage() {
   const [fontSize, setFontSize] = useState<"sm" | "base" | "lg">("base");
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteNum, setInviteNum] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const typingChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const lastTypingSentRef = useRef(0);
