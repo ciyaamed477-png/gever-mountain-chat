@@ -12,6 +12,7 @@ import { Camera, LogOut, Copy, ArrowLeft } from "lucide-react";
 
 export default function ProfilePage() {
   const { profile, refreshProfile, signOut, user } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [status, setStatus] = useState("");
   const [about, setAbout] = useState("");
