@@ -239,6 +239,17 @@ export default function ChatPage() {
     void loadHeader();
   }
 
+  async function deleteConversation() {
+    if (!conversationId) return;
+    setConfirmDelete(false);
+    const { error } = await supabase.rpc("delete_conversation_for_user", {
+      _conversation_id: conversationId,
+    });
+    if (error) return toast.error(error.message);
+    toast.success("Sohbet silindi");
+    navigate("/");
+  }
+
   const fsClass = fontSize === "sm" ? "text-sm" : fontSize === "lg" ? "text-lg" : "text-base";
 
   return (
