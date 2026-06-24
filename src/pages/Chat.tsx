@@ -401,6 +401,30 @@ export default function ChatPage() {
       </form>
 
       {profile && <Link to="#" className="hidden" aria-hidden />}
+
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {header?.is_group ? "Gruptan ayrıl?" : "Sohbeti sil?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {header?.is_group
+                ? "Bu gruptan ayrılacaksın ve sohbet listenden kaldırılacak."
+                : "Bu sohbet senin için silinecek ve mesaj geçmişi kaldırılacak. Bu işlem geri alınamaz."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={deleteConversation}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sil
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
