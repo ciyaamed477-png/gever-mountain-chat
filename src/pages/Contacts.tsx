@@ -44,6 +44,7 @@ export default function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [blocked, setBlocked] = useState<Blocked[]>([]);
   const [busy, setBusy] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState<Contact | null>(null);
 
   async function load() {
     const [c, b] = await Promise.all([
