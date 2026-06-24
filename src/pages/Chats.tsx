@@ -181,10 +181,10 @@ export default function ChatsPage() {
               const avatar = r.is_group ? r.group_avatar_url : r.other_avatar_url;
               const initials = (title || "?").slice(0, 2).toUpperCase();
               return (
-                <li key={r.conversation_id}>
+                <li key={r.conversation_id} className="relative">
                   <Link
                     to={`/chat/${r.conversation_id}`}
-                    className="flex items-center gap-3 px-5 py-3 active:bg-secondary"
+                    className="flex items-center gap-3 px-5 py-3 pr-14 active:bg-secondary"
                   >
                     <Avatar className="h-12 w-12">
                       {avatar && <AvatarImage src={avatar} />}
@@ -209,12 +209,49 @@ export default function ChatsPage() {
                       </div>
                     </div>
                   </Link>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setDeleteTarget(r);
+                    }}
+                    aria-label="Sohbeti sil"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 text-muted-foreground hover:bg-secondary hover:text-destructive"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
                 </li>
               );
             })}
           </ul>
         )}
       </div>
+
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(o) => !o && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sohbeti sil?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget?.is_group
+                ? "Bu gruptan ayrılacaksın ve sohbet listenden kaldırılacak."
+                : "Bu sohbet senin için silinecek ve mesaj geçmişi kaldırılacak."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={deleteConversation}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sil
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
