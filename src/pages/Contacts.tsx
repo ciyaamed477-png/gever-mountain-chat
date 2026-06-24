@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageSquare, Trash2, UserPlus, Ban, RotateCcw } from "lucide-react";
+import { MessageSquare, Trash2, UserPlus, Ban, RotateCcw, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import {
   Tabs,
