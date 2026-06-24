@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Check, CheckCheck, Send, UserPlus } from "lucide-react";
+import { ArrowLeft, Check, CheckCheck, Send, UserPlus, MoreVertical, Trash2 } from "lucide-react";
 import { formatTime } from "@/lib/utils";
 import { toast } from "sonner";
 import {
@@ -15,6 +15,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type Message = {
   id: string;
@@ -44,6 +60,7 @@ export default function ChatPage() {
   const [fontSize, setFontSize] = useState<"sm" | "base" | "lg">("base");
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteNum, setInviteNum] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const typingChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const lastTypingSentRef = useRef(0);
@@ -222,6 +239,17 @@ export default function ChatPage() {
     void loadHeader();
   }
 
+  async function deleteConversation() {
+    if (!conversationId) return;
+    setConfirmDelete(false);
+    const { error } = await supabase.rpc("delete_conversation_for_user", {
+      _conversation_id: conversationId,
+    });
+    if (error) return toast.error(error.message);
+    toast.success("Sohbet silindi");
+    navigate("/");
+  }
+
   const fsClass = fontSize === "sm" ? "text-sm" : fontSize === "lg" ? "text-lg" : "text-base";
 
   return (
@@ -272,6 +300,22 @@ export default function ChatPage() {
             </DialogContent>
           </Dialog>
         )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Daha fazla">
+              <MoreVertical className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => setConfirmDelete(true)}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {header?.is_group ? "Gruptan ayrıl ve sil" : "Sohbeti sil"}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       <div
@@ -357,6 +401,30 @@ export default function ChatPage() {
       </form>
 
       {profile && <Link to="#" className="hidden" aria-hidden />}
+
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {header?.is_group ? "Gruptan ayrıl?" : "Sohbeti sil?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {header?.is_group
+                ? "Bu gruptan ayrılacaksın ve sohbet listenden kaldırılacak."
+                : "Bu sohbet senin için silinecek ve mesaj geçmişi kaldırılacak. Bu işlem geri alınamaz."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={deleteConversation}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sil
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
