@@ -43,6 +43,15 @@ export function GlobalMessageListener() {
   useEffect(() => {
     if (!user) return;
 
+    // Ask for OS-level notification permission (used when tab is hidden / app in background)
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      try {
+        void Notification.requestPermission();
+      } catch {
+        /* ignore */
+      }
+    }
+
     const channel = supabase
       .channel("global-messages")
       .on(
@@ -57,7 +66,6 @@ export function GlobalMessageListener() {
           };
           if (msg.sender_id === user.id) return;
 
-          // Check membership
           const { data: member } = await supabase
             .from("conversation_members")
             .select("conversation_id, notifications_enabled")
@@ -67,10 +75,10 @@ export function GlobalMessageListener() {
           if (!member) return;
           if (member.notifications_enabled === false) return;
 
-          // Skip if already viewing this chat
-          if (locationRef.current === `/chat/${msg.conversation_id}`) return;
+          const inChat = locationRef.current === `/chat/${msg.conversation_id}`;
+          const hidden = typeof document !== "undefined" && document.hidden;
+          if (inChat && !hidden) return;
 
-          // Get sender name
           const { data: sender } = await supabase
             .from("profiles")
             .select("display_name, gever_number")
@@ -78,9 +86,35 @@ export function GlobalMessageListener() {
             .maybeSingle();
 
           const name = sender?.display_name || `#${sender?.gever_number || ""}`;
+          const body = msg.content.slice(0, 140);
+
+          // Background / hidden tab → OS-level notification
+          if (
+            hidden &&
+            typeof Notification !== "undefined" &&
+            Notification.permission === "granted"
+          ) {
+            try {
+              const n = new Notification(name, {
+                body,
+                icon: "/favicon.ico",
+                tag: `gever-${msg.conversation_id}`,
+              });
+              n.onclick = () => {
+                window.focus();
+                navigate(`/chat/${msg.conversation_id}`);
+                n.close();
+              };
+            } catch {
+              /* ignore */
+            }
+            return;
+          }
+
+          // Foreground → in-app toast + ding
           playDing();
           toast(name, {
-            description: msg.content.slice(0, 120),
+            description: body,
             action: {
               label: "Aç",
               onClick: () => navigate(`/chat/${msg.conversation_id}`),
