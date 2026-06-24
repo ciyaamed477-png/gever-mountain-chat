@@ -13,6 +13,16 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type Contact = {
   contact_id: string;
@@ -34,6 +44,7 @@ export default function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [blocked, setBlocked] = useState<Blocked[]>([]);
   const [busy, setBusy] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState<Contact | null>(null);
 
   async function load() {
     const [c, b] = await Promise.all([
@@ -66,10 +77,32 @@ export default function ContactsPage() {
     navigate(`/chat/${data as string}`);
   }
 
-  async function removeContact(otherId: string) {
-    const { error } = await supabase.rpc("remove_contact", { _other_user_id: otherId });
-    if (error) return toast.error(error.message);
-    void load();
+  async function confirmRemoveContact() {
+    const c = confirmRemove;
+    if (!c) return;
+    setConfirmRemove(null);
+    // optimistic
+    setContacts((prev) => prev.filter((x) => x.contact_id !== c.contact_id));
+    const { error } = await supabase.rpc("remove_contact", { _other_user_id: c.contact_id });
+    if (error) {
+      toast.error(error.message);
+      void load();
+      return;
+    }
+    toast.success(`${c.display_name} silindi`, {
+      action: {
+        label: "Geri al",
+        onClick: async () => {
+          const { error: e2 } = await supabase.rpc("add_contact_by_number", {
+            _gever_number: c.gever_number,
+          });
+          if (e2) toast.error(e2.message);
+          else toast.success("Kişi geri alındı");
+          void load();
+        },
+      },
+      duration: 6000,
+    });
   }
 
   async function block(otherId: string) {
@@ -148,7 +181,7 @@ export default function ContactsPage() {
                   <Button size="icon" variant="ghost" onClick={() => block(c.contact_id)} aria-label="Engelle">
                     <Ban className="h-5 w-5" />
                   </Button>
-                  <Button size="icon" variant="ghost" onClick={() => removeContact(c.contact_id)} aria-label="Sil">
+                  <Button size="icon" variant="ghost" onClick={() => setConfirmRemove(c)} aria-label="Sil">
                     <Trash2 className="h-5 w-5" />
                   </Button>
                 </li>
@@ -182,6 +215,30 @@ export default function ContactsPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      <AlertDialog
+        open={!!confirmRemove}
+        onOpenChange={(o) => !o && setConfirmRemove(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Kişiyi sil?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmRemove?.display_name} kişisi listenden kaldırılacak. Geri almak için
+              silindikten sonra "Geri al" butonunu kullanabilirsin.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmRemoveContact}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sil
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
