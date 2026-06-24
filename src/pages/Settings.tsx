@@ -37,6 +37,7 @@ function saveSettings(s: Settings) {
 
 export default function SettingsPage() {
   const { signOut } = useAuth();
+  const navigate = useNavigate();
   const [s, setS] = useState<Settings>(DEFAULTS);
   useEffect(() => setS(loadSettings()), []);
   function update<K extends keyof Settings>(k: K, v: Settings[K]) {
