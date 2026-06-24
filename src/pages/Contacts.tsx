@@ -181,7 +181,7 @@ export default function ContactsPage() {
                   <Button size="icon" variant="ghost" onClick={() => block(c.contact_id)} aria-label="Engelle">
                     <Ban className="h-5 w-5" />
                   </Button>
-                  <Button size="icon" variant="ghost" onClick={() => removeContact(c.contact_id)} aria-label="Sil">
+                  <Button size="icon" variant="ghost" onClick={() => setConfirmRemove(c)} aria-label="Sil">
                     <Trash2 className="h-5 w-5" />
                   </Button>
                 </li>
