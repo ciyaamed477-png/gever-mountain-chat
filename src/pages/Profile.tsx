@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -7,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Camera, LogOut, Copy } from "lucide-react";
+import { Camera, LogOut, Copy, ArrowLeft } from "lucide-react";
 
 export default function ProfilePage() {
   const { profile, refreshProfile, signOut, user } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [status, setStatus] = useState("");
   const [about, setAbout] = useState("");
@@ -79,7 +81,15 @@ export default function ProfilePage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <header className="px-5 pb-3 pt-6">
+      <header className="flex items-center gap-2 px-3 pb-3 pt-6">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate(-1)}
+          aria-label="Geri"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
         <h1 className="text-2xl font-black tracking-wider">Profil</h1>
       </header>
       <div className="flex flex-col items-center gap-4 px-5 pb-6">

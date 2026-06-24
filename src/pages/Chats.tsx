@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDay } from "@/lib/utils";
-import { MessageSquarePlus, Users } from "lucide-react";
+import { MessageSquarePlus, Users, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,6 +13,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
@@ -36,6 +46,7 @@ export default function ChatsPage() {
   const [loading, setLoading] = useState(true);
   const [groupOpen, setGroupOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<ConversationRow | null>(null);
 
   async function load() {
     if (!user) return;
@@ -47,6 +58,22 @@ export default function ChatsPage() {
     }
     setRows((data as ConversationRow[]) || []);
     setLoading(false);
+  }
+
+  async function deleteConversation() {
+    if (!deleteTarget) return;
+    const id = deleteTarget.conversation_id;
+    setDeleteTarget(null);
+    setRows((prev) => prev.filter((r) => r.conversation_id !== id));
+    const { error } = await supabase.rpc("delete_conversation_for_user", {
+      _conversation_id: id,
+    });
+    if (error) {
+      toast.error(error.message);
+      void load();
+    } else {
+      toast.success("Sohbet silindi");
+    }
   }
 
   useEffect(() => {
@@ -154,10 +181,10 @@ export default function ChatsPage() {
               const avatar = r.is_group ? r.group_avatar_url : r.other_avatar_url;
               const initials = (title || "?").slice(0, 2).toUpperCase();
               return (
-                <li key={r.conversation_id}>
+                <li key={r.conversation_id} className="relative">
                   <Link
                     to={`/chat/${r.conversation_id}`}
-                    className="flex items-center gap-3 px-5 py-3 active:bg-secondary"
+                    className="flex items-center gap-3 px-5 py-3 pr-14 active:bg-secondary"
                   >
                     <Avatar className="h-12 w-12">
                       {avatar && <AvatarImage src={avatar} />}
@@ -182,12 +209,49 @@ export default function ChatsPage() {
                       </div>
                     </div>
                   </Link>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setDeleteTarget(r);
+                    }}
+                    aria-label="Sohbeti sil"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 text-muted-foreground hover:bg-secondary hover:text-destructive"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
                 </li>
               );
             })}
           </ul>
         )}
       </div>
+
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(o) => !o && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sohbeti sil?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget?.is_group
+                ? "Bu gruptan ayrılacaksın ve sohbet listenden kaldırılacak."
+                : "Bu sohbet senin için silinecek ve mesaj geçmişi kaldırılacak."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={deleteConversation}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sil
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

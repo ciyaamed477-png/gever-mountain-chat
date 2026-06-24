@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import logo from "@/assets/gever-logo.png";
 
@@ -35,6 +37,7 @@ function saveSettings(s: Settings) {
 
 export default function SettingsPage() {
   const { signOut } = useAuth();
+  const navigate = useNavigate();
   const [s, setS] = useState<Settings>(DEFAULTS);
   useEffect(() => setS(loadSettings()), []);
   function update<K extends keyof Settings>(k: K, v: Settings[K]) {
@@ -47,9 +50,18 @@ export default function SettingsPage() {
 
   return (
     <div className="h-full overflow-y-auto">
-      <header className="px-5 pb-3 pt-6">
+      <header className="flex items-center gap-2 px-3 pb-3 pt-6">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate(-1)}
+          aria-label="Geri"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
         <h1 className="text-2xl font-black tracking-wider">Ayarlar</h1>
       </header>
+
 
       <div className="space-y-6 px-5 pb-10">
         <Section title="Bildirimler">

@@ -195,6 +195,10 @@ export type Database = {
       }
       block_user: { Args: { _other_user_id: string }; Returns: undefined }
       create_group_conversation: { Args: { _name: string }; Returns: string }
+      delete_conversation_for_user: {
+        Args: { _conversation_id: string }
+        Returns: undefined
+      }
       get_my_blocked: {
         Args: never
         Returns: {
