@@ -215,6 +215,30 @@ export default function ContactsPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      <AlertDialog
+        open={!!confirmRemove}
+        onOpenChange={(o) => !o && setConfirmRemove(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Kişiyi sil?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmRemove?.display_name} kişisi listenden kaldırılacak. Geri almak için
+              silindikten sonra "Geri al" butonunu kullanabilirsin.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmRemoveContact}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sil
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
