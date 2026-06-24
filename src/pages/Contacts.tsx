@@ -77,10 +77,32 @@ export default function ContactsPage() {
     navigate(`/chat/${data as string}`);
   }
 
-  async function removeContact(otherId: string) {
-    const { error } = await supabase.rpc("remove_contact", { _other_user_id: otherId });
-    if (error) return toast.error(error.message);
-    void load();
+  async function confirmRemoveContact() {
+    const c = confirmRemove;
+    if (!c) return;
+    setConfirmRemove(null);
+    // optimistic
+    setContacts((prev) => prev.filter((x) => x.contact_id !== c.contact_id));
+    const { error } = await supabase.rpc("remove_contact", { _other_user_id: c.contact_id });
+    if (error) {
+      toast.error(error.message);
+      void load();
+      return;
+    }
+    toast.success(`${c.display_name} silindi`, {
+      action: {
+        label: "Geri al",
+        onClick: async () => {
+          const { error: e2 } = await supabase.rpc("add_contact_by_number", {
+            _gever_number: c.gever_number,
+          });
+          if (e2) toast.error(e2.message);
+          else toast.success("Kişi geri alındı");
+          void load();
+        },
+      },
+      duration: 6000,
+    });
   }
 
   async function block(otherId: string) {
