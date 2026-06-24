@@ -46,6 +46,7 @@ export default function ChatsPage() {
   const [loading, setLoading] = useState(true);
   const [groupOpen, setGroupOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<ConversationRow | null>(null);
 
   async function load() {
     if (!user) return;
@@ -57,6 +58,22 @@ export default function ChatsPage() {
     }
     setRows((data as ConversationRow[]) || []);
     setLoading(false);
+  }
+
+  async function deleteConversation() {
+    if (!deleteTarget) return;
+    const id = deleteTarget.conversation_id;
+    setDeleteTarget(null);
+    setRows((prev) => prev.filter((r) => r.conversation_id !== id));
+    const { error } = await supabase.rpc("delete_conversation_for_user", {
+      _conversation_id: id,
+    });
+    if (error) {
+      toast.error(error.message);
+      void load();
+    } else {
+      toast.success("Sohbet silindi");
+    }
   }
 
   useEffect(() => {
