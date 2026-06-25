@@ -167,14 +167,20 @@ export default function ContactsPage() {
             <ul className="divide-y divide-border">
               {contacts.map((c) => (
                 <li key={c.contact_id} className="flex items-center gap-3 px-5 py-3">
-                  <Avatar className="h-11 w-11">
-                    {c.avatar_url && <AvatarImage src={c.avatar_url} />}
-                    <AvatarFallback>{c.display_name.slice(0, 2).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate font-semibold">{c.display_name}</div>
-                    <div className="text-xs text-muted-foreground">#{c.gever_number}</div>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/u/${c.contact_id}`)}
+                    className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                  >
+                    <Avatar className="h-11 w-11">
+                      {c.avatar_url && <AvatarImage src={c.avatar_url} />}
+                      <AvatarFallback>{c.display_name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-semibold">{c.display_name}</div>
+                      <div className="text-xs text-muted-foreground">#{c.gever_number}</div>
+                    </div>
+                  </button>
                   <Button size="icon" variant="ghost" onClick={() => startDM(c.contact_id)} aria-label="Mesaj">
                     <MessageSquare className="h-5 w-5" />
                   </Button>

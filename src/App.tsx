@@ -5,6 +5,7 @@ import ChatsPage from "./pages/Chats";
 import ChatPage from "./pages/Chat";
 import ContactsPage from "./pages/Contacts";
 import ProfilePage from "./pages/Profile";
+import ProfileViewPage from "./pages/ProfileView";
 import SettingsPage from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import AppShell from "./components/AppShell";
@@ -74,6 +75,14 @@ export default function App() {
         element={
           <Protected>
             <ChatPage />
+          </Protected>
+        }
+      />
+      <Route
+        path="/u/:userId"
+        element={
+          <Protected>
+            <ProfileViewPage />
           </Protected>
         }
       />
