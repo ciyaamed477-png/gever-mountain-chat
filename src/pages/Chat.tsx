@@ -48,6 +48,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Attachment } from "@/components/Attachment";
+import PageHead from "@/components/PageHead";
 
 type Message = {
   id: string;
