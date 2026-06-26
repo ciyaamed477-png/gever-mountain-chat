@@ -19,7 +19,9 @@ import {
   Mic,
   X,
   Loader2,
+  Phone,
 } from "lucide-react";
+import { useCall } from "@/components/CallProvider";
 import { formatTime } from "@/lib/utils";
 import { toast } from "sonner";
 import {
