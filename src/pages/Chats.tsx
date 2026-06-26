@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { friendlyError } from "@/lib/errors";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -52,7 +53,7 @@ export default function ChatsPage() {
     if (!user) return;
     const { data, error } = await supabase.rpc("get_my_conversations");
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       setLoading(false);
       return;
     }
@@ -69,7 +70,7 @@ export default function ChatsPage() {
       _conversation_id: id,
     });
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       void load();
     } else {
       toast.success("Sohbet silindi");
@@ -103,7 +104,7 @@ export default function ChatsPage() {
     const { data, error } = await supabase.rpc("create_group_conversation", {
       _name: groupName.trim(),
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("Grup oluşturuldu");
     setGroupOpen(false);
     setGroupName("");

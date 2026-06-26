@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { friendlyError } from "@/lib/errors";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -255,7 +256,7 @@ export default function ChatPage() {
       content,
     });
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       setText(content);
     }
   }
@@ -290,7 +291,7 @@ export default function ChatPage() {
       });
       if (insErr) throw insErr;
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     } finally {
       setUploading(false);
     }
@@ -372,7 +373,7 @@ export default function ChatPage() {
       _conversation_id: conversationId,
       _gever_number: inviteNum,
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("Eklendi");
     setInviteOpen(false);
     setInviteNum("");
@@ -385,7 +386,7 @@ export default function ChatPage() {
     const { error } = await supabase.rpc("delete_conversation_for_user", {
       _conversation_id: conversationId,
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("Sohbet silindi");
     navigate("/");
   }
