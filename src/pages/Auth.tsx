@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import logo from "@/assets/gever-logo.png";
+import PageHead from "@/components/PageHead";
 
 const SYNTH_DOMAIN = "gever.app";
 
@@ -89,9 +90,11 @@ export default function AuthPage() {
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-background px-6 py-10 text-foreground">
+      <PageHead title="GEVER — Giriş ve Kayıt" description="GEVER hesabınla giriş yap veya yeni bir Gever numarası al." path="/auth" />
+      <main className="flex w-full flex-col items-center">
       <div className="mb-8 flex flex-col items-center gap-3">
-        <img src={logo} alt="GEVER" className="h-24 w-24 drop-shadow-[0_0_30px_rgba(99,102,241,0.4)]" />
-        <h1 className="text-3xl font-black tracking-[0.35em]">GEVER</h1>
+        <img src={logo} alt="GEVER logo" className="h-24 w-24 drop-shadow-[0_0_30px_rgba(99,102,241,0.4)]" />
+        <h1 className="text-3xl font-black tracking-[0.35em]">GEVER — Sade Mesajlaşma</h1>
         <p className="text-center text-sm text-muted-foreground">
           Cilo'nun zirvelerinden, sade mesajlaşma.
         </p>
@@ -177,6 +180,7 @@ export default function AuthPage() {
           </form>
         )}
       </div>
+      </main>
     </div>
   );
 }

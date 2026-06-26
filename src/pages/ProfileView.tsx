@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MessageSquare, UserPlus, Ban, Copy } from "lucide-react";
+import PageHead from "@/components/PageHead";
 import { toast } from "sonner";
 
 type Profile = {
@@ -78,6 +79,7 @@ export default function ProfileViewPage() {
 
   return (
     <div className="flex h-dvh flex-col bg-background">
+      <PageHead title={`${p?.display_name || "Kullanıcı"} profili · GEVER`} path={`/u/${userId ?? ""}`} />
       <header className="flex items-center gap-2 border-b border-border bg-card px-3 py-3 pt-[max(env(safe-area-inset-top),12px)]">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Geri">
           <ArrowLeft className="h-5 w-5" />

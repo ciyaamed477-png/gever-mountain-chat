@@ -48,6 +48,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Attachment } from "@/components/Attachment";
+import PageHead from "@/components/PageHead";
 
 type Message = {
   id: string;
@@ -404,6 +405,8 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-dvh flex-col bg-background text-foreground">
+      <PageHead title={`${header?.title || "Sohbet"} · Mesajlaşma · GEVER`} path={`/chat/${conversationId ?? ""}`} />
+      <h1 className="sr-only">{`Mesajlaşma — ${header?.title || "Sohbet"}`}</h1>
       <header className="flex items-center gap-3 border-b border-border bg-card px-3 py-3 pt-[max(env(safe-area-inset-top),12px)]">
         <Button
           variant="ghost"
@@ -490,8 +493,8 @@ export default function ChatPage() {
         </DropdownMenu>
       </header>
 
-      <div
-        ref={scrollerRef}
+      <main
+        ref={scrollerRef as React.RefObject<HTMLElement>}
         className="flex-1 overflow-y-auto bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.08),transparent_60%)] px-3 py-4"
       >
         <div className="space-y-2">
@@ -550,7 +553,8 @@ export default function ChatPage() {
             </div>
           )}
         </div>
-      </div>
+      </main>
+
 
       {recording ? (
         <div className="flex items-center gap-3 border-t border-border bg-card px-3 py-3 pb-[max(env(safe-area-inset-bottom),12px)]">

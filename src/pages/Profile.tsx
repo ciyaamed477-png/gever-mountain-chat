@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Camera, LogOut, Copy, ArrowLeft } from "lucide-react";
+import PageHead from "@/components/PageHead";
 
 export default function ProfilePage() {
   const { profile, refreshProfile, signOut, user } = useAuth();
@@ -82,6 +83,7 @@ export default function ProfilePage() {
 
   return (
     <div className="h-full overflow-y-auto">
+      <PageHead title="Profil · GEVER" description="GEVER profilini düzenle: isim, avatar ve durum mesajı." path="/profile" />
       <header className="flex items-center gap-2 px-3 pb-3 pt-6">
         <Button
           variant="ghost"

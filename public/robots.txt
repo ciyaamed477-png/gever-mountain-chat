@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gever-mountain-chat.lovable.app/sitemap.xml

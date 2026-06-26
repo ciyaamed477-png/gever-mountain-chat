@@ -1,0 +1,10 @@
+# GEVER
+
+> Sade ve hızlı mesajlaşma uygulaması — 8 haneli Gever numarasıyla anlık mesajlaşma, sesli arama ve grup sohbeti.
+
+GEVER, kullanıcıların 8 haneli benzersiz "Gever numarası" ile birbirlerine ulaşıp güvenli şekilde mesajlaşabildiği, sesli arama yapabildiği ve grup sohbetleri kurabildiği bir mobil öncelikli uygulamadır. Dark mode ve "Cilo Dağları" temasıyla tasarlanmıştır; Android APK olarak da paketlenebilir.
+
+## Pages
+
+- [Ana Sayfa](/): Uygulama hakkında genel bilgi.
+- [Giriş / Kayıt](/auth): Gever numarası ve şifre ile giriş.
