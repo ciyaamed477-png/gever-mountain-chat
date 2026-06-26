@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import AppShell from "./components/AppShell";
 import { GlobalMessageListener } from "./components/GlobalMessageListener";
 import SplashScreen from "./components/SplashScreen";
+import { CallProvider } from "./components/CallProvider";
 
 function Protected({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -27,7 +28,7 @@ function Protected({ children }: { children: React.ReactNode }) {
 export default function App() {
   const { user, loading } = useAuth();
   if (loading) return <SplashScreen />;
-  return (
+  const routes = (
     <Routes>
       <Route path="/auth" element={user ? <Navigate to="/" replace /> : <AuthPage />} />
       <Route
@@ -89,4 +90,5 @@ export default function App() {
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
+  return user ? <CallProvider>{routes}</CallProvider> : routes;
 }

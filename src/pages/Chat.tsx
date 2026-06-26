@@ -19,7 +19,9 @@ import {
   Mic,
   X,
   Loader2,
+  Phone,
 } from "lucide-react";
+import { useCall } from "@/components/CallProvider";
 import { formatTime } from "@/lib/utils";
 import { toast } from "sonner";
 import {
@@ -76,6 +78,7 @@ export default function ChatPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
+  const { startCall } = useCall();
   const [text, setText] = useState("");
   const [header, setHeader] = useState<Header | null>(null);
   const [typing, setTyping] = useState(false);
@@ -426,6 +429,22 @@ export default function ChatPage() {
             </div>
           </div>
         </button>
+        {header && !header.is_group && header.other_user_id && (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Sesli ara"
+            onClick={() =>
+              void startCall({
+                id: header.other_user_id!,
+                name: header.title,
+                avatar: header.avatar_url,
+              })
+            }
+          >
+            <Phone className="h-5 w-5" />
+          </Button>
+        )}
         {header?.is_group && (
           <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
             <DialogTrigger asChild>
