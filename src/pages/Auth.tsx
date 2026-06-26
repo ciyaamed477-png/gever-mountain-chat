@@ -179,6 +179,7 @@ export default function AuthPage() {
           </form>
         )}
       </div>
+      </main>
     </div>
   );
 }
