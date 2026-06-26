@@ -429,6 +429,22 @@ export default function ChatPage() {
             </div>
           </div>
         </button>
+        {header && !header.is_group && header.other_user_id && (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Sesli ara"
+            onClick={() =>
+              void startCall({
+                id: header.other_user_id!,
+                name: header.title,
+                avatar: header.avatar_url,
+              })
+            }
+          >
+            <Phone className="h-5 w-5" />
+          </Button>
+        )}
         {header?.is_group && (
           <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
             <DialogTrigger asChild>
