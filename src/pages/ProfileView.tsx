@@ -79,7 +79,7 @@ export default function ProfileViewPage() {
 
   return (
     <div className="flex h-dvh flex-col bg-background">
-      <PageHead title={`${profile?.display_name || "Kullanıcı"} profili · GEVER`} path={`/u/${userId ?? ""}`} />
+      <PageHead title={`${p?.display_name || "Kullanıcı"} profili · GEVER`} path={`/u/${userId ?? ""}`} />
       <header className="flex items-center gap-2 border-b border-border bg-card px-3 py-3 pt-[max(env(safe-area-inset-top),12px)]">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label="Geri">
           <ArrowLeft className="h-5 w-5" />
