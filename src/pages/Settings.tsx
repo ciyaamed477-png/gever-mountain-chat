@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import logo from "@/assets/gever-logo.png";
+import PageHead from "@/components/PageHead";
 
 type Settings = {
   notificationsEnabled: boolean;
@@ -50,6 +51,7 @@ export default function SettingsPage() {
 
   return (
     <div className="h-full overflow-y-auto">
+      <PageHead title="Ayarlar · GEVER" description="GEVER bildirim, ses ve görünüm ayarlarını düzenle." path="/settings" />
       <header className="flex items-center gap-2 px-3 pb-3 pt-6">
         <Button
           variant="ghost"
@@ -135,7 +137,7 @@ export default function SettingsPage() {
         </Section>
 
         <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4">
-          <img src={logo} alt="GEVER" className="h-10 w-10" />
+          <img src={logo} alt="GEVER logo" className="h-10 w-10" />
           <div className="flex-1">
             <div className="font-semibold">GEVER</div>
             <div className="text-xs text-muted-foreground">
