@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDay } from "@/lib/utils";
 import { MessageSquarePlus, Users, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PageHead from "@/components/PageHead";
 import {
   Dialog,
   DialogContent,
@@ -115,9 +116,10 @@ export default function ChatsPage() {
 
   return (
     <div className="flex h-full flex-col">
+      <PageHead title="Sohbetler · GEVER" description="GEVER sohbetlerin: anlık mesajlaşma, sesli arama ve gruplar." path="/" />
       <header className="flex items-center justify-between px-5 pb-3 pt-6">
         <div>
-          <h1 className="text-2xl font-black tracking-wider">GEVER</h1>
+          <h1 className="text-2xl font-black tracking-wider">GEVER — Sade Mesajlaşma</h1>
           {profile && (
             <p className="text-xs text-muted-foreground">
               #{profile.gever_number} · {profile.display_name}
