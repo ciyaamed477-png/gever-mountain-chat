@@ -78,6 +78,7 @@ export default function ChatPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
+  const { startCall } = useCall();
   const [text, setText] = useState("");
   const [header, setHeader] = useState<Header | null>(null);
   const [typing, setTyping] = useState(false);
