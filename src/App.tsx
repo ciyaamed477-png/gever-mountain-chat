@@ -90,4 +90,5 @@ export default function App() {
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
+  return user ? <CallProvider>{routes}</CallProvider> : routes;
 }
