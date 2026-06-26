@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { friendlyError } from "@/lib/errors";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -63,7 +64,7 @@ export default function ContactsPage() {
     setBusy(true);
     const { error } = await supabase.rpc("add_contact_by_number", { _gever_number: num });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("Kişi eklendi");
     setNum("");
     void load();
@@ -73,7 +74,7 @@ export default function ContactsPage() {
     const { data, error } = await supabase.rpc("get_or_create_direct_conversation", {
       _other_user_id: otherId,
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     navigate(`/chat/${data as string}`);
   }
 
@@ -85,7 +86,7 @@ export default function ContactsPage() {
     setContacts((prev) => prev.filter((x) => x.contact_id !== c.contact_id));
     const { error } = await supabase.rpc("remove_contact", { _other_user_id: c.contact_id });
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       void load();
       return;
     }
@@ -96,7 +97,7 @@ export default function ContactsPage() {
           const { error: e2 } = await supabase.rpc("add_contact_by_number", {
             _gever_number: c.gever_number,
           });
-          if (e2) toast.error(e2.message);
+          if (e2) toast.error(friendlyError(e2));
           else toast.success("Kişi geri alındı");
           void load();
         },
@@ -107,13 +108,13 @@ export default function ContactsPage() {
 
   async function block(otherId: string) {
     const { error } = await supabase.rpc("block_user", { _other_user_id: otherId });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("Kullanıcı engellendi");
     void load();
   }
   async function unblock(otherId: string) {
     const { error } = await supabase.rpc("unblock_user", { _other_user_id: otherId });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("Engel kaldırıldı");
     void load();
   }

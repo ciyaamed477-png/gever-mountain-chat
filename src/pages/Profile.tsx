@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { friendlyError } from "@/lib/errors";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -38,7 +39,7 @@ export default function ProfilePage() {
       })
       .eq("id", user.id);
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("Profil güncellendi");
     void refreshProfile();
   }
@@ -54,7 +55,7 @@ export default function ProfilePage() {
     });
     if (upErr) {
       setBusy(false);
-      return toast.error(upErr.message);
+      return toast.error(friendlyError(upErr));
     }
     // Private bucket → use a long-lived signed URL
     const { data: signed, error: signErr } = await supabase.storage
@@ -62,14 +63,14 @@ export default function ProfilePage() {
       .createSignedUrl(path, 60 * 60 * 24 * 365);
     if (signErr || !signed) {
       setBusy(false);
-      return toast.error(signErr?.message || "URL oluşturulamadı");
+      return toast.error(signErr ? friendlyError(signErr) : "URL oluşturulamadı");
     }
     const { error } = await supabase
       .from("profiles")
       .update({ avatar_url: signed.signedUrl })
       .eq("id", user.id);
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("Foto güncellendi");
     void refreshProfile();
   }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { friendlyError } from "@/lib/errors";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -69,7 +70,7 @@ export default function AuthPage() {
           continue; // try another number
         }
         setBusy(false);
-        return toast.error(error.message);
+        return toast.error(friendlyError(error));
       }
       // Success
       setBusy(false);

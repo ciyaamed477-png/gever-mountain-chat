@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { friendlyError } from "@/lib/errors";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -48,7 +49,7 @@ export default function ProfileViewPage() {
     const { data, error } = await supabase.rpc("get_or_create_direct_conversation", {
       _other_user_id: userId,
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     navigate(`/chat/${data as string}`);
   }
 
@@ -57,14 +58,14 @@ export default function ProfileViewPage() {
     const { error } = await supabase.rpc("add_contact_by_number", {
       _gever_number: p.gever_number,
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("Kişi eklendi");
   }
 
   async function block() {
     if (!userId) return;
     const { error } = await supabase.rpc("block_user", { _other_user_id: userId });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("Engellendi");
   }
 
