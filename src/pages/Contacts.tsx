@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageSquare, Trash2, UserPlus, Ban, RotateCcw, ArrowLeft } from "lucide-react";
+import PageHead from "@/components/PageHead";
 import { toast } from "sonner";
 import {
   Tabs,
@@ -121,6 +122,7 @@ export default function ContactsPage() {
 
   return (
     <div className="flex h-full flex-col">
+      <PageHead title="Kişiler · GEVER" description="Gever numarasıyla yeni kişi ekle, sohbet başlat veya kişileri yönet." path="/contacts" />
       <header className="flex items-center gap-2 px-3 pb-3 pt-6">
         <Button
           variant="ghost"
