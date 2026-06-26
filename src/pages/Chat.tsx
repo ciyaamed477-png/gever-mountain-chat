@@ -552,7 +552,8 @@ export default function ChatPage() {
             </div>
           )}
         </div>
-      </div>
+      </main>
+
 
       {recording ? (
         <div className="flex items-center gap-3 border-t border-border bg-card px-3 py-3 pb-[max(env(safe-area-inset-bottom),12px)]">
