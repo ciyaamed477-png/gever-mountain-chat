@@ -192,6 +192,18 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
       const evt = payload as SignalEvent;
       const cur = stateRef.current;
 
+      // Basic sender validation: reject anything claiming to be from ourselves
+      // (Realtime broadcast has no sender identity, so we treat fromId as untrusted
+      // metadata and apply best-effort checks here.)
+      if (
+        !evt ||
+        typeof evt.fromId !== "string" ||
+        !/^[0-9a-f-]{36}$/i.test(evt.fromId) ||
+        evt.fromId === user.id
+      ) {
+        return;
+      }
+
       // INVITE — only when idle
       if (evt.type === "invite") {
         if (cur.phase !== "idle") {
@@ -203,12 +215,19 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
           });
           return;
         }
+        // Verify the caller actually exists as a profile (best-effort anti-spoof)
+        const { data: callerProfile } = await supabase
+          .from("profiles")
+          .select("id, display_name, avatar_url")
+          .eq("id", evt.fromId)
+          .maybeSingle();
+        if (!callerProfile) return;
         setState({
           phase: "incoming",
           callId: evt.callId,
-          peerId: evt.fromId,
-          peerName: evt.fromName,
-          peerAvatar: evt.fromAvatar,
+          peerId: callerProfile.id,
+          peerName: callerProfile.display_name || "Bilinmeyen",
+          peerAvatar: callerProfile.avatar_url ?? null,
           isCaller: false,
         });
         try {
@@ -218,7 +237,9 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
         }
         if (document.hidden && "Notification" in window && Notification.permission === "granted") {
           try {
-            new Notification(`Gelen arama: ${evt.fromName}`, { body: "Sesli arama" });
+            new Notification(`Gelen arama: ${callerProfile.display_name || "Bilinmeyen"}`, {
+              body: "Sesli arama",
+            });
           } catch {
             /* */
           }
@@ -226,8 +247,9 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // For everything else, the call must be the current one
+      // For everything else, the call must be the current one AND the sender must be the peer
       if (cur.phase === "idle" || cur.callId !== evt.callId) return;
+      if (evt.fromId !== cur.peerId) return;
 
       if (evt.type === "accept" && cur.isCaller) {
         // callee accepted → create offer
