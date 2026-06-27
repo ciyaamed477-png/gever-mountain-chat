@@ -466,70 +466,146 @@ function CallOverlay({
   onDecline: () => void;
   onToggleMute: () => void;
 }) {
+  // Vibrate on incoming call (mobile)
+  useEffect(() => {
+    if (state.phase !== "incoming") return;
+    if (typeof navigator === "undefined" || !("vibrate" in navigator)) return;
+    try {
+      navigator.vibrate?.([600, 400, 600, 400, 600]);
+      const id = window.setInterval(() => {
+        try {
+          navigator.vibrate?.([600, 400, 600, 400, 600]);
+        } catch {
+          /* */
+        }
+      }, 3000);
+      return () => {
+        window.clearInterval(id);
+        try {
+          navigator.vibrate?.(0);
+        } catch {
+          /* */
+        }
+      };
+    } catch {
+      /* */
+    }
+  }, [state.phase]);
+
   if (state.phase === "idle") return null;
-  const status =
+
+  const statusLabel =
     state.phase === "incoming"
       ? "Gelen sesli arama"
       : state.phase === "outgoing"
-      ? "Çağrılıyor…"
+      ? "Çağrılıyor"
       : state.phase === "connecting"
-      ? "Bağlanıyor…"
-      : fmtTime(elapsed);
+      ? "Bağlanıyor"
+      : "Görüşme sürüyor";
+
+  const showDots =
+    state.phase === "outgoing" || state.phase === "connecting" || state.phase === "incoming";
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-gradient-to-b from-emerald-950 via-slate-950 to-black text-white">
-      <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 pt-[env(safe-area-inset-top)]">
-        <Avatar className="h-32 w-32 ring-4 ring-emerald-700/40">
-          {state.peerAvatar && <AvatarImage src={state.peerAvatar} />}
-          <AvatarFallback className="text-3xl">
-            {(state.peerName || "?").slice(0, 2).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <div className="text-center">
-          <div className="text-2xl font-semibold">{state.peerName}</div>
-          <div className="mt-2 text-sm text-emerald-200/80">{status}</div>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={statusLabel}
+      className="fixed inset-0 z-[100] flex flex-col bg-gradient-to-b from-emerald-950 via-slate-950 to-black text-white animate-in fade-in duration-200"
+    >
+      <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 pt-[env(safe-area-inset-top)]">
+        <div className="relative">
+          {state.phase === "incoming" && (
+            <>
+              <span className="absolute inset-0 -m-2 rounded-full bg-emerald-500/20 animate-ping" />
+              <span className="absolute inset-0 -m-6 rounded-full bg-emerald-500/10 animate-ping [animation-delay:300ms]" />
+            </>
+          )}
+          <Avatar className="relative h-36 w-36 ring-4 ring-emerald-700/40">
+            {state.peerAvatar && <AvatarImage src={state.peerAvatar} />}
+            <AvatarFallback className="text-3xl bg-emerald-900 text-emerald-100">
+              {(state.peerName || "?").slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+
+        <div className="text-center space-y-2">
+          <div className="text-2xl font-semibold tracking-tight">{state.peerName}</div>
+          <div className="flex items-center justify-center gap-2 text-sm text-emerald-200/80">
+            <span>{statusLabel}</span>
+            {showDots && (
+              <span className="inline-flex gap-1" aria-hidden="true">
+                <span className="h-1 w-1 rounded-full bg-emerald-300 animate-bounce [animation-delay:0ms]" />
+                <span className="h-1 w-1 rounded-full bg-emerald-300 animate-bounce [animation-delay:150ms]" />
+                <span className="h-1 w-1 rounded-full bg-emerald-300 animate-bounce [animation-delay:300ms]" />
+              </span>
+            )}
+            {state.phase === "active" && (
+              <span className="font-mono tabular-nums text-emerald-100">· {fmtTime(elapsed)}</span>
+            )}
+          </div>
+          {state.phase === "incoming" && (
+            <div className="text-xs text-emerald-200/60">Cevaplamak için yeşil tuşa basın</div>
+          )}
         </div>
       </div>
-      <div className="flex items-center justify-center gap-6 px-6 pb-[max(env(safe-area-inset-bottom),24px)] pt-6">
+
+      <div className="px-6 pb-[max(env(safe-area-inset-bottom),24px)] pt-6">
         {state.phase === "incoming" ? (
-          <>
-            <Button
-              size="lg"
-              onClick={onDecline}
-              className="h-16 w-16 rounded-full bg-red-600 p-0 hover:bg-red-700"
-              aria-label="Reddet"
-            >
-              <PhoneOff className="h-7 w-7" />
-            </Button>
-            <Button
-              size="lg"
-              onClick={onAccept}
-              className="h-16 w-16 rounded-full bg-emerald-600 p-0 hover:bg-emerald-700"
-              aria-label="Kabul et"
-            >
-              <Phone className="h-7 w-7" />
-            </Button>
-          </>
+          <div className="flex items-center justify-around max-w-sm mx-auto">
+            <div className="flex flex-col items-center gap-2">
+              <Button
+                size="lg"
+                onClick={onDecline}
+                className="h-16 w-16 rounded-full bg-red-600 p-0 hover:bg-red-700 shadow-lg shadow-red-900/40"
+                aria-label="Reddet"
+              >
+                <PhoneOff className="h-7 w-7" />
+              </Button>
+              <span className="text-xs text-white/80">Reddet</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Button
+                size="lg"
+                onClick={onAccept}
+                className="h-16 w-16 rounded-full bg-emerald-600 p-0 hover:bg-emerald-700 shadow-lg shadow-emerald-900/40 animate-pulse"
+                aria-label="Kabul et"
+              >
+                <Phone className="h-7 w-7" />
+              </Button>
+              <span className="text-xs text-white/80">Kabul et</span>
+            </div>
+          </div>
         ) : (
-          <>
-            <Button
-              size="lg"
-              variant="secondary"
-              onClick={onToggleMute}
-              className="h-14 w-14 rounded-full p-0"
-              aria-label={muted ? "Sesi aç" : "Sustur"}
-            >
-              {muted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
-            </Button>
-            <Button
-              size="lg"
-              onClick={onDecline}
-              className="h-16 w-16 rounded-full bg-red-600 p-0 hover:bg-red-700"
-              aria-label="Bitir"
-            >
-              <PhoneOff className="h-7 w-7" />
-            </Button>
-          </>
+          <div className="flex items-center justify-around max-w-sm mx-auto">
+            <div className="flex flex-col items-center gap-2">
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={onToggleMute}
+                disabled={state.phase !== "active"}
+                className="h-14 w-14 rounded-full p-0 bg-white/10 hover:bg-white/20 text-white border-0 disabled:opacity-40"
+                aria-label={muted ? "Sesi aç" : "Sustur"}
+                aria-pressed={muted}
+              >
+                {muted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+              </Button>
+              <span className="text-xs text-white/70">{muted ? "Sessiz" : "Sustur"}</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Button
+                size="lg"
+                onClick={onDecline}
+                className="h-16 w-16 rounded-full bg-red-600 p-0 hover:bg-red-700 shadow-lg shadow-red-900/40"
+                aria-label={state.phase === "outgoing" ? "İptal" : "Bitir"}
+              >
+                <PhoneOff className="h-7 w-7" />
+              </Button>
+              <span className="text-xs text-white/80">
+                {state.phase === "outgoing" ? "İptal" : "Bitir"}
+              </span>
+            </div>
+          </div>
         )}
       </div>
     </div>
