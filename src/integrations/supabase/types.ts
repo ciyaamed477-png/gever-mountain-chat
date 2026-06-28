@@ -252,8 +252,6 @@ export type Database = {
         Args: { _other_user_id: string }
         Returns: string
       }
-      has_block_between: { Args: { _a: string; _b: string }; Returns: boolean }
-      is_member_of: { Args: { _conv: string; _user: string }; Returns: boolean }
       mark_conversation_read: {
         Args: { _conversation_id: string }
         Returns: undefined
