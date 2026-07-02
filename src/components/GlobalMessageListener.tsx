@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
 
 // Web Audio API — short pleasant "ding" without external assets.
 function playDing() {
@@ -39,6 +40,10 @@ export function GlobalMessageListener() {
   const location = useLocation();
   const locationRef = useRef(location.pathname);
   locationRef.current = location.pathname;
+
+  // Register native FCM push (Android APK) — no-op on web.
+  usePushNotifications();
+
 
   useEffect(() => {
     if (!user) return;
