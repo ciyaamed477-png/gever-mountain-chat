@@ -1,1 +1,7 @@
 project_id = "ymqttksqgyobbtwxjzke"
+
+[functions.send-push]
+verify_jwt = false
+
+[functions.ice-servers]
+verify_jwt = true
