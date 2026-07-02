@@ -236,6 +236,7 @@ export type Database = {
         Returns: string
       }
       block_user: { Args: { _other_user_id: string }; Returns: undefined }
+      can_view_profile: { Args: { _target: string }; Returns: boolean }
       create_group_conversation: { Args: { _name: string }; Returns: string }
       delete_conversation_for_user: {
         Args: { _conversation_id: string }
